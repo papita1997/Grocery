@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dao.ProductDao;
+import pojo.BasketPojo;
 import pojo.CheckOutPojo;
 
 
@@ -24,6 +25,8 @@ public class PlaceOrderServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		String prodid=(String)req.getParameter("pid");
+		String prodidlist = (String)req.getParameter("pidlist");
+		
 		HttpSession session=req.getSession();
 		String userid=(String) session.getAttribute("userid");
 		if(userid ==null) {
@@ -31,7 +34,7 @@ public class PlaceOrderServlet extends HttpServlet {
 			return;
 			
 		}
-		if(prodid!=null) {
+		if(prodid!=null || prodidlist!=null) {
 			
 			String fname=req.getParameter("fname");
 			String lname=req.getParameter("lname");
@@ -45,7 +48,7 @@ public class PlaceOrderServlet extends HttpServlet {
 			
 			CheckOutPojo check = new CheckOutPojo();
 			
-			check.setPro_Id(prodid);
+			check.setPro_Id(!prodid.equals("null")?prodid : prodidlist);
 			check.setAddId("ADD"+System.currentTimeMillis());
 			check.setFirstName(fname);
 			check.setLastName(lname);

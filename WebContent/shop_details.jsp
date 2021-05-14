@@ -138,13 +138,13 @@
                         
                        <%
                         	 }
-                       	request.getSession().setAttribute("pid", shop.getProductId());
+                       	
                        %>
                        
                     </div>
                     <hr>
                      <a href="javascript:void(0)" data-value="<%= shop.getProductId() %>" onclick="addCart(this)" class="primary-btn">ADD TO BASKET</a>
-                        <a href="checkout.jsp" class="primary-btn">BUY NOW</a>
+                        <a href="checkout.jsp?pid=<%=shop.getProductId() %>" class="primary-btn">BUY NOW</a>
                     
                 </div>
                 

@@ -1,7 +1,7 @@
 <jsp:include page="header.jsp"/>
    <jsp:include page="herosection.jsp"/>
    
-   <%@page import="java.util.*,pojo.SubCategoryPojo,dao.ProductDao" %>
+   <%@page import="java.util.*,pojo.SubCategoryPojo,dao.ProductDao,pojo.ProductPojo,dao.HomeDao,pojo.BasketPojo" %>
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="images/breadcrumb.jpg">
         <div class="container">
@@ -19,7 +19,13 @@
         </div>
     </section>
     <!-- Breadcrumb Section End -->
-
+	<% 
+	List<BasketPojo> list = HomeDao.AllBasketData((String)request.getSession().getAttribute("userid")); 
+	//String prodidlist = "";
+	//for(BasketPojo b:list){
+		//prodidlist = prodidlist + b.getProductID();
+	//}
+	%>
     <!-- Checkout Section Begin -->
     <section class="checkout spad">
         <div class="container">
@@ -31,7 +37,7 @@
             </div>
             <div class="checkout__form">
                 <h4>Billing Details</h4>
-                <form action="PlaceOrderServlet?pid=<%=(String)request.getSession().getAttribute("pid") %>" method="post">
+                <form action="PlaceOrderServlet?pid=<%=request.getParameter("pid")%>&pidlist=<%=list.stream().map(b -> b.getProductID()).reduce("", String::concat) %>" method="post">
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
                             <div class="row">
@@ -85,14 +91,33 @@
                             </div>
                       
                         </div>
-                        <%
-                        	SubCategoryPojo order= ProductDao.CheckOutProduct((String)request.getSession().getAttribute("pid"));
-                        	if(order!=null){
-                        %>
                         <div class="col-lg-4 col-md-6">
                             <div class="checkout__order">
                                 <h4>Your Order</h4>
-                                <div class="checkout__order__products">Products <span>Total</span></div>
+                        <%
+                        	SubCategoryPojo order= ProductDao.CheckOutProduct(request.getParameter("pid"));
+                        	
+                        	boolean basket = Boolean.parseBoolean(request.getParameter("basket"));
+                        	if(basket){
+                        		
+                        %>
+                        
+                                <div class="checkout__order__products">Products <span>Total</span></div>  
+                                <ul>
+                                    <li>No of products <span><%= list.size() %></span></li>
+                                    <li>Total MRP  <span>Rs <%=list.stream().mapToDouble(bask -> bask.gettPrice()).sum() %></span></li>
+                                    <li>DISCOUNT(-10%) <span>-Rs <%= list.stream().mapToDouble(bask -> bask.gettPrice()).sum()/10 %></span></li>
+                                </ul>
+                                <div class="checkout__order__subtotal">Subtotal <span>Rs <%= list.stream().mapToDouble(bask -> bask.gettPrice()).sum() - (list.stream().mapToDouble(bask -> bask.gettPrice()).sum()/10) %></span></div>
+                                <div class="checkout__order__total">Total <span>Rs  <%= list.stream().mapToDouble(bask -> bask.gettPrice()).sum() - (list.stream().mapToDouble(bask -> bask.gettPrice()).sum()/10) %> </span></div>
+                                
+                            <%
+                                
+                        	}
+                        	
+                        		if(!basket && order!=null) {
+                            %>    
+                            	<div class="checkout__order__products">Products <span>Total</span></div>
                                 <ul>
                                     <li><%= order.getProductName() %><span></span></li>
                                     <li>MRP  <span>Rs <%= order.getMrp() %></span></li>
@@ -100,10 +125,9 @@
                                 </ul>
                                 <div class="checkout__order__subtotal">Subtotal <span>Rs <%= order.getTotalPrice() %></span></div>
                                 <div class="checkout__order__total">Total <span>Rs <%= order.getTotalPrice() %></span></div>
-                                
-                            <%
-                        	}
-                            %>    
+                            
+                            <% } %>
+                            
                                 <div class="checkout__input__checkbox">
                                     <label for="payment">
                                         Check Payment

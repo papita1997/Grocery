@@ -66,7 +66,7 @@
                                 </tr>
                                 
                   <% 	}
-                            	} %>
+                            	 %>
                             </tbody>
                         </table>
                     </div>
@@ -95,12 +95,13 @@
                     <div class="shoping__checkout">
                         <h5>Cart Total</h5>
                         <ul>
-                            <li>Subtotal <span>Rs 454.98</span></li>
-                            <li>Total <span>Rs 454.98</span></li>
+                            <li>Subtotal <span>Rs <%= list.stream().mapToDouble(basket -> basket.gettPrice()).sum() %></span></li>
+                            <li>Total <span>Rs <%= list.stream().mapToDouble(basket -> basket.gettPrice()).sum() %></span></li>
                         </ul>
-                        <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
+                        <a href="checkout.jsp?basket=true" class="primary-btn">PROCEED TO CHECKOUT</a>
                     </div>
                 </div>
+                <% } %>
             </div>
         </div>
     </section>
