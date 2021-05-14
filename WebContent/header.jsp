@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
     <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
     
     <style>
@@ -80,6 +81,17 @@
         .setting ul{
         	width: 130px;
         }
+        .setting ul li a:hover {
+        	color:red;
+        }
+        .bsetting ul li a:hover {
+        	color:red;
+        }
+        .cancel a:hover {
+           	color:blue;
+           	font-weight:bold;   		
+        }
+       
         </style>
     
 </head>
@@ -118,9 +130,9 @@
                 <div>Setting</div>
                 <span class="arrow_carrot-down"></span>
                 <ul>
-                    <li><a href="changepwd.jsp">Change Pass</a></li>
+                    <li class="active"><a href="changepwd.jsp">Change Pass</a></li>
                     
-                    <li><a href="logout">Log Out</a></li>
+                    <li class="active"><a href="logout">Log Out</a></li>
                 </ul>
             </div>
             
@@ -133,6 +145,7 @@
             <ul>
                 <li class="active"><a href="#">Home</a></li>
                 <li><a href="#">Contact</a></li>
+                <li><a href="orderPlaced.jsp">Orders</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -177,7 +190,7 @@
 								<div>Setting</div>
                                 <span class="arrow_carrot-down"></span>
                                 <ul>
-                                    <li><a href="changepwd.jsp">Change Password</a></li>
+                                    <li ><a href="changepwd.jsp">Change Password</a></li>
                                     <li><a href="logout">Log out</a></li>
                                 </ul>
                             </div>
@@ -203,7 +216,7 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="header__logo">
-                        <a href="./index.html"><img src="images/logo.png" alt=""></a>
+                        <a href="home.jsp"><img src="images/logo.png" alt=""></a>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -211,6 +224,7 @@
                         <ul>
                             <li class="active"><a href="home.jsp">Home</a></li>
                             <li><a href="#">Contact</a></li>
+                            <li><a href="orderPlaced.jsp">Orders</a></li>
                         </ul>
                     </nav>
                 </div>

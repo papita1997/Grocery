@@ -12,12 +12,13 @@ import dbutils.DBConnection;
 import global.GlobalData;
 import pojo.AdminProductPojo;
 import pojo.CheckOutPojo;
+import pojo.OrdersPojo;
 import pojo.ShopProductPojo;
 import pojo.SubCategoryPojo;
 
 public class ProductDao {
 		private static Statement st,st1,st2;
-		private static PreparedStatement ps,ps1,ps2,ps3,ps4,ps5,ps6,ps7;
+		private static PreparedStatement ps,ps1,ps2,ps3,ps4,ps5,ps6,ps7,ps8,ps9;
 		
 	static {
 		try {
@@ -33,7 +34,8 @@ public class ProductDao {
 			ps5=conn.prepareStatement("insert into address values(?,?,?,?,?,?,?,?,?,?)");
 			ps6=conn.prepareStatement("insert into purchase values(?,?,?,?,?)");
 			ps7=conn.prepareStatement("select prod_id, pd_name,mrp,disc,tprice from product where prod_id=?" );
-			
+			ps8=conn.prepareStatement("select product.prod_id,pd_name,tprice,description,img1,orderid from product,purchase,images where images.prod_id=product.prod_id and purchase.userid=? and product.prod_id=purchase.pro_id;");
+			ps9 = conn.prepareStatement("delete from purchase where pro_id=? and orderid=?");
 		}
 		catch(Exception ex) {
 			System.err.println("Error "+ex.getMessage());
@@ -167,9 +169,10 @@ public class ProductDao {
 		return list;
 	}
 	
-	public static boolean PlaceOrder(CheckOutPojo check) throws Exception {
+	public static boolean PlaceOrder(List<CheckOutPojo> checks) throws Exception {
 		
 		Connection conn=DBConnection.connect();
+		for(CheckOutPojo check:checks) {
 		ps5.setString(1, check.getAddId());
 		ps5.setString(2, check.getFirstName());
 		ps5.setString(3, check.getLastName());
@@ -180,17 +183,20 @@ public class ProductDao {
 		ps5.setInt(8 ,check.getPinCode());
 		ps5.setString(9,check.getPhone());
 		ps5.setString(10,check.getEmail());
-		
-		int add =ps5.executeUpdate();
+		ps5.addBatch();
+		}
+		int[] add =ps5.executeBatch();
+		for(CheckOutPojo check:checks) {
 		ps6.setString(1, check.getPro_Id());
 		ps6.setInt(2, check.getQty());
 		ps6.setString(3, check.getAddId());
 		ps6.setString(4, check.getUserid());
 		ps6.setString(5, check.getOrderId());
-		
-		int pur=ps6.executeUpdate();
+		ps6.addBatch();
+		}
+		int[] pur=ps6.executeBatch();
 		conn.setAutoCommit(false);
-		if(add>0 && pur>0) {
+		if(add.length>0 && pur.length>0) {
 			conn.commit();
 			conn.close();
 			return true;
@@ -199,8 +205,6 @@ public class ProductDao {
 			conn.rollback();
 			conn.close();
 			return false;
-			
-			
 		}
 	}
 	
@@ -258,6 +262,26 @@ public class ProductDao {
 		HashMap<String,String> map = new HashMap<>();
 		map.put("u103", "liter");
 		return map;
+	}
+	
+	public static List<OrdersPojo> findAllOrdersPlaced(String userid) throws Exception{
+		List<OrdersPojo> orders = new ArrayList<>();
+		DBConnection.connect();
+		ps8.setString(1, userid);
+		ResultSet rs = ps8.executeQuery();
+		while(rs.next()) {
+			orders.add(new OrdersPojo(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4),rs.getString(5),rs.getString(6)));
+		}
+		DBConnection.closeConnection();
+		return orders;
+	}
+	
+	public static boolean deleteFromPurchase(String pid, String orderid) throws Exception {
+		DBConnection.connect();
+		ps9.setString(1, pid);
+		ps9.setString(2, orderid);
+		
+		return ps9.executeUpdate()>0;
 	}
 }
  

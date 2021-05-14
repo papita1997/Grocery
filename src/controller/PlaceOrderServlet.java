@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,9 +48,10 @@ public class PlaceOrderServlet extends HttpServlet {
 			String phone=req.getParameter("phone");
 			String email=req.getParameter("email");
 			
+			List<CheckOutPojo> checks = new ArrayList<>();
+			if(!prodid.equals("null")) {
 			CheckOutPojo check = new CheckOutPojo();
-			
-			check.setPro_Id(!prodid.equals("null")?prodid : prodidlist);
+			check.setPro_Id(prodid);
 			check.setAddId("ADD"+System.currentTimeMillis());
 			check.setFirstName(fname);
 			check.setLastName(lname);
@@ -62,10 +65,32 @@ public class PlaceOrderServlet extends HttpServlet {
 			check.setQty(1);
 			check.setOrderId("ORD"+System.currentTimeMillis());
 			check.setUserid(userid);
-			
+			checks.add(check);
+			} else {
+				String[] prodListArray = prodidlist.split("p");
+				long millisec = System.currentTimeMillis();
+				for(int i=1;i<prodListArray.length;i++) {
+					CheckOutPojo check = new CheckOutPojo();
+					check.setPro_Id("p"+prodListArray[i]);
+					check.setAddId("ADD"+millisec);
+					check.setFirstName(fname);
+					check.setLastName(lname);
+					check.setCountry(country);
+					check.setAddress(address);
+					check.setTown(town);
+					check.setState(state);
+					check.setPinCode(Integer.parseInt(pincode));
+					check.setPhone(phone);
+					check.setEmail(email);
+					check.setQty(1);
+					check.setOrderId("ORD"+System.currentTimeMillis());
+					check.setUserid(userid);
+					checks.add(check);
+				}
+			}
 			try {
 				
-				boolean Result =ProductDao.PlaceOrder(check);
+				boolean Result =ProductDao.PlaceOrder(checks);
 				if(Result) {
 					resp.sendRedirect("home.jsp");
 				}
